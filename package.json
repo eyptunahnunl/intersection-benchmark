@@ -1,0 +1,28 @@
+{
+  "name": "intersection-benchmark",
+  "author":"eyptunahnunl <etunaunal@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eyptunahnunl/intersection-benchmark"
+  },
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "generate": "node scripts/generate-data.js"
+  },
+  "dependencies": {
+    "@turf/turf": "^7.2.0",
+    "maplibre-gl": "^5.2.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "tinybench": "^3.1.1",
+    "vite": "^6.2.2",
+    "vite-plugin-top-level-await": "^1.4.4",
+    "vite-plugin-wasm": "^3.4.1"
+  }
+}
