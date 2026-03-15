@@ -1,131 +1,131 @@
 # Turf.js vs Rust WASM — Polygon Intersection Benchmark
 
-Bu proje, **gercek dunya web uygulamasi kosullarinda** Turf.js ile Rust tabanli WebAssembly (WASM) arasindaki polygon intersection performansini karsilastirmaktadir. Odak noktasi saf algoritma hizi degil; bir web uygulamasinda her iki kutuphanenin **uçtan uca** (veri hazirlamadan sonuc almaya kadar) ne kadar sure aldigidir.
+This project benchmarks polygon intersection performance between Turf.js and Rust-based WebAssembly (WASM) under **real-world web application conditions**. The focus is not raw algorithm speed, but the **end-to-end** time each library takes inside a web app — from data preparation to receiving the result.
 
 ---
 
-## Sonuclar
+## Results
 
-### Kucuk Polygon (~20 vertex)
+### Small Polygon (~20 vertices)
 
-![Kucuk Polygon Benchmark Sonucu](assets/small-polygon-result.png)
+![Small Polygon Benchmark Result](assets/small-polygon-result.png)
 
-| Metrik         | Turf.js    | Rust WASM  | Fark    |
-|----------------|------------|------------|---------|
-| ops/saniye     | 2,442      | 30,811     | 12.62x  |
-| Ortalama (ms)  | 418.36     | 26.24      | 15.95x  |
-| Min (ms)       | 300.00     | 0.00       | —       |
-| Max (ms)       | 600.00     | 200.00     | 3.00x   |
-| Std Sapma (ms) | 59.65      | 44.71      | 1.33x   |
-| P75 (ms)       | 500.00     | 100.00     | 5.00x   |
-| P99 (ms)       | 500.00     | 100.00     | 5.00x   |
+| Metric       | Turf.js | Rust WASM | Diff   |
+|--------------|---------|-----------|--------|
+| ops/sec      | 2,442   | 30,811    | 12.62x |
+| Mean (ms)    | 418.36  | 26.24     | 15.95x |
+| Min (ms)     | 300.00  | 0.00      | —      |
+| Max (ms)     | 600.00  | 200.00    | 3.00x  |
+| Std Dev (ms) | 59.65   | 44.71     | 1.33x  |
+| P75 (ms)     | 500.00  | 100.00    | 5.00x  |
+| P99 (ms)     | 500.00  | 100.00    | 5.00x  |
 
-**Sonuc:** Kucuk polygonlarda Rust WASM, Turf.js'ten ~12.6x daha hizli.
-
----
-
-### Buyuk Polygon (~1000 vertex)
-
-![Buyuk Polygon Benchmark Sonucu](assets/large-polygon-result.png)
-
-| Metrik         | Turf.js       | Rust WASM    | Fark    |
-|----------------|---------------|--------------|---------|
-| ops/saniye     | 5             | 196          | 38.39x  |
-| Ortalama (ms)  | 195,805.00    | 5,098.98     | 38.40x  |
-| Min (ms)       | 188,600.00    | 4,900.00     | 38.49x  |
-| Max (ms)       | 231,600.00    | 5,700.00     | 40.63x  |
-| Std Sapma (ms) | 6,164.57      | 137.02       | 44.99x  |
-| P75 (ms)       | 197,250.00    | 5,200.00     | 37.93x  |
-| P99 (ms)       | 211,602.00    | 5,408.00     | 39.13x  |
-
-**Sonuc:** Buyuk ve karmasik polygonlarda Rust WASM, Turf.js'ten ~38.4x daha hizli.
+**Result:** For small polygons, Rust WASM is ~12.6x faster than Turf.js.
 
 ---
 
-## Ozet Karsilastirma
+### Large Polygon (~1000 vertices)
 
-| Senaryo        | Turf.js ops/sn | WASM ops/sn | Hiz Farki | Std Sapma Farki |
-|----------------|----------------|-------------|-----------|-----------------|
-| Kucuk polygon  | 2,442          | 30,811      | **12.62x**| 1.33x           |
-| Buyuk polygon  | 5              | 196         | **38.39x**| 44.99x          |
+![Large Polygon Benchmark Result](assets/large-polygon-result.png)
 
-Polygon karmasikligi arttikca WASM'in avantaji dramatik bicimde buyumektedir. Ayrica WASM buyuk polygon testinde cok daha tutarli sonuclar vermektedir (std sapma 44.99x daha dusuk).
+| Metric       | Turf.js       | Rust WASM  | Diff   |
+|--------------|---------------|------------|--------|
+| ops/sec      | 5             | 196        | 38.39x |
+| Mean (ms)    | 195,805.00    | 5,098.98   | 38.40x |
+| Min (ms)     | 188,600.00    | 4,900.00   | 38.49x |
+| Max (ms)     | 231,600.00    | 5,700.00   | 40.63x |
+| Std Dev (ms) | 6,164.57      | 137.02     | 44.99x |
+| P75 (ms)     | 197,250.00    | 5,200.00   | 37.93x |
+| P99 (ms)     | 211,602.00    | 5,408.00   | 39.13x |
 
----
-
-## Metrik Aciklamalari
-
-| Metrik           | Aciklama |
-|------------------|----------|
-| **ops/saniye**   | Saniyede kac intersection islemi tamamlanabildigini gosterir. Ne kadar yuksekse o kadar iyi. |
-| **Ortalama (ms)**| Tek bir intersection isleminin ortalama suresi. Ne kadar dusukse o kadar iyi. |
-| **Min (ms)**     | En hizli olculen iterasyon suresi. Teorik en iyi performansi temsil eder. |
-| **Max (ms)**     | En yavas olculen iterasyon suresi. En kotu durumu gosterir (GC pause, cache miss vb.). |
-| **Std Sapma (ms)**| Surelerin ne kadar degisken oldugunu olcer. Dusuk deger = tutarli ve tahmin edilebilir performans. |
-| **P75 (ms)**     | Iterasyonlarin %75'i bu sureden hizliydi. Tipik performansi temsil eder. |
-| **P99 (ms)**     | Iterasyonlarin %99'u bu sureden hizliydi. En kotu senaryolarin neredeyse tamaminini kapsar (tail latency). |
+**Result:** For large, complex polygons, Rust WASM is ~38.4x faster than Turf.js.
 
 ---
 
-## Proje Yapisi
+## Summary
+
+| Scenario      | Turf.js ops/sec | WASM ops/sec | Speed Diff  | Std Dev Diff |
+|---------------|-----------------|--------------|-------------|--------------|
+| Small polygon | 2,442           | 30,811       | **12.62x**  | 1.33x        |
+| Large polygon | 5               | 196          | **38.39x**  | 44.99x       |
+
+As polygon complexity increases, WASM's advantage grows dramatically. WASM also produces significantly more consistent results on the large polygon test (std dev is 44.99x lower).
+
+---
+
+## Metric Definitions
+
+| Metric        | Description |
+|---------------|-------------|
+| **ops/sec**   | Number of intersection operations completed per second. Higher is better. |
+| **Mean (ms)** | Average time for a single intersection operation. Lower is better. |
+| **Min (ms)**  | Fastest recorded iteration. Represents the theoretical best-case performance. |
+| **Max (ms)**  | Slowest recorded iteration. Reveals worst-case behavior (GC pauses, cache misses, etc.). |
+| **Std Dev (ms)** | Measures how much latency varies between iterations. Lower = more consistent and predictable. |
+| **P75 (ms)**  | 75% of iterations completed faster than this value. Represents typical performance. |
+| **P99 (ms)**  | 99% of iterations completed faster than this value. Covers nearly all worst-case scenarios (tail latency). |
+
+---
+
+## Project Structure
 
 ```
 turf-vs-wasm/
 └── intersection-benchmark/
     ├── src/
-    │   ├── App.jsx            # UI ve benchmark orkestrasyon
-    │   ├── benchmark.js       # TinyBench ile olcum mantigi
-    │   └── MapView.jsx        # MapLibre harita gorunumu
+    │   ├── App.jsx            # UI and benchmark orchestration
+    │   ├── benchmark.js       # Measurement logic with TinyBench
+    │   └── MapView.jsx        # MapLibre map view
     ├── scripts/
-    │   └── generate-data.js   # GeoJSON test verisi uretici
+    │   └── generate-data.js   # GeoJSON test data generator
     ├── public/
     │   ├── small-a.geojson    # ~20 vertex polygon
     │   ├── small-b.geojson
     │   ├── large-a.geojson    # ~1000 vertex polygon
     │   └── large-b.geojson
     └── geo-wasm/
-        ├── src/lib.rs         # Rust WASM intersection implementasyonu
-        └── pkg/               # Derlenmi WASM binary ve JS bindings
+        ├── src/lib.rs         # Rust WASM intersection implementation
+        └── pkg/               # Compiled WASM binary and JS bindings
 ```
 
 ---
 
-## Benchmark Metodolojisi
+## Benchmark Methodology
 
-- **Araci**: [TinyBench](https://github.com/tinylibs/tinybench)
-- **Iterasyon**: Kucuk senaryo icin 500, buyuk senaryo icin 100
-- **Warmup**: TinyBench varsayilan warmup (16 iterasyon, 250ms)
-- **Veri**: Istanbul merkezi etrafinda seed'li random polygon (seed 42 ve 99 — tekrarlanabilir)
-- **Algoritma**: Her iki tarafta da Martinez-Rueda ailesi (Turf: polyclip-ts, WASM: geo crate BooleanOps)
+- **Tool**: [TinyBench](https://github.com/tinylibs/tinybench)
+- **Iterations**: 500 for the small scenario, 100 for the large scenario
+- **Warmup**: TinyBench default warmup (16 iterations, 250ms)
+- **Data**: Seeded random polygons around Istanbul center (seeds 42 and 99 — fully reproducible)
+- **Algorithm**: Martinez-Rueda family on both sides (Turf: polyclip-ts, WASM: geo crate BooleanOps)
 
-### Ne Olculuyor?
+### What Is Being Measured?
 
-Bu benchmark **gercek dunya kullanimi** senaryosunu olcer:
+This benchmark measures a **real-world usage** scenario:
 
-- **Turf.js tarafinda**: Onceden parse edilmis JavaScript objeleri uzerinde intersection hesaplama
-- **WASM tarafinda**: JSON string alma → JSON parse → GeoJSON tip donusumu → intersection hesaplama → sonucu JSON string'e serializasyon
+- **Turf.js side**: Intersection computed on pre-parsed JavaScript objects
+- **WASM side**: Receive JSON string → parse JSON → convert GeoJSON to geo types → compute intersection → serialize result back to JSON string
 
-Yani WASM, JS/WASM sinirini gecmek icin gereken serialization/deserialization maliyetini de tasimaktadir. Bu, pratikte bir web uygulamasinda WASM'i nasil kullanacaginizin gercekci bir yansimasi. **Saf algoritma hizi** olculmemektedir.
-
----
-
-## Tarafsizlik Notu
-
-Benchmark kabaca adil olmakla birlikte birkac asimetri mevcuttur:
-
-| Durum | Etki |
-|-------|------|
-| WASM her iterasyonda JSON parse + GeoJSON tip donusumu yapiyor, Turf dogrudan JS objesi kullaniyor | **WASM aleyhine** |
-| WASM sonucu JSON string'e serializasyon yapiyor, Turf dogrudan JS objesi donduruyor | **WASM aleyhine** |
-| Turf her iterasyonda `featureCollection([a,b])` ile yeni bir obje olusturuyor | **Turf aleyhine** (minimal) |
-| Turf her zaman ilk calistirildiginda JIT henuz isiniyor, WASM ikinci calistiginda CPU cache daha sicak | **Belirsiz** |
-| Turf JS obje allocations yuzunden GC tetiklenebilir, WASM linear memory'de calisir | **Turf aleyhine** (belirsiz) |
-
-**Genel degerlendirme:** WASM, serialization/deserialization maliyetini de ustlenerek bu sonuclari uretmektedir. Saf intersection hesaplamasi olculuyor olsaydi WASM farki cok daha buyuk olurdu.
+WASM therefore carries the full serialization/deserialization cost of crossing the JS/WASM boundary. This is a realistic reflection of how you would actually use WASM in a web application. **Raw algorithm speed is not being measured.**
 
 ---
 
-## Gelistirme
+## Fairness Note
+
+The benchmark is broadly fair but has a few asymmetries worth noting:
+
+| Condition | Effect |
+|-----------|--------|
+| WASM parses JSON and converts GeoJSON types on every iteration; Turf uses pre-parsed JS objects | **Disadvantages WASM** |
+| WASM serializes the result to a JSON string; Turf returns a JS object directly | **Disadvantages WASM** |
+| Turf creates a new `featureCollection([a,b])` object on every iteration | **Disadvantages Turf** (minimal) |
+| Turf always runs first (JIT still warming up); WASM runs second (CPU cache warmer) | **Unclear** |
+| Turf allocates JS objects each iteration, which can trigger GC; WASM uses linear memory | **Disadvantages Turf** (unclear magnitude) |
+
+**Overall:** WASM produces these results while bearing the serialization/deserialization overhead. If raw intersection performance were measured in isolation, the gap would be even larger.
+
+---
+
+## Development
 
 ```bash
 cd intersection-benchmark
@@ -133,13 +133,13 @@ npm install
 npm run dev
 ```
 
-Test verisini yeniden uretmek icin:
+To regenerate test data:
 
 ```bash
 npm run generate
 ```
 
-WASM'i yeniden derlemek icin (`wasm-pack` gerekli):
+To recompile WASM (requires `wasm-pack`):
 
 ```bash
 cd geo-wasm
